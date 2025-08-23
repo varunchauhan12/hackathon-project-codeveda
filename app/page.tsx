@@ -1,7 +1,7 @@
 "use client";
 
 import { useScroll, useTransform } from "framer-motion";
-import Navbar from "./utils/navbar";
+
 
 export default function Home() {
   const { scrollY } = useScroll();
@@ -14,9 +14,15 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full flex flex-col overflow-x-hidden relative">
-      <Navbar />
-      {/* rest of homepage content */}
+    <div className="w-full min-h-screen flex flex-col overflow-x-hidden relative">
+      
+
+      
+        
+      
+
+      
+      
     </div>
   );
 }
