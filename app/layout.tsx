@@ -3,7 +3,14 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import {ThemeProvider} from "@/components/theme-provider";
+import {Nata_Sans} from "next/font/google";
 
+
+const nataSans = Nata_Sans({
+    variable: "--font-nata-sans",
+    subsets: ["latin"],
+})
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,8 +35,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-     <body className={cn('text-base antialiased', inter.className)}>{children}</body>
-    </html>
+      <html lang="en" suppressHydrationWarning className={nataSans.className}>
+      <head />
+      <body>
+      <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+      >
+          {children}
+      </ThemeProvider>
+      </body>
+      </html>
   );
 }
