@@ -86,7 +86,7 @@ export default function LandingPage() {
             <StyledButton href="#form" variant="primary">
               Start Selling
             </StyledButton>
-            <StyledButton onClick={handleScrollDown} variant="secondary">
+            <StyledButton onClick={handleScrollDown} href="#" variant="secondary">
               Learn More
             </StyledButton>
           </motion.div>

@@ -1,107 +1,158 @@
-// app/buyer/page.tsx
 "use client";
+
 import { useState } from "react";
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, PieChart, Pie, Cell, Legend
+} from "recharts";
 
-export default function BuyerDashboard() {
-    const [orders, setOrders] = useState([
-        { id: 1, crop: "Paddy", qty: 1000, price: 3.9, status: "In Transit" },
-        { id: 2, crop: "Wheat", qty: 800, price: 3.2, status: "Delivered" }
-    ]);
+type Order = {
+  id: number;
+  crop: string;
+  qty: number;
+  price: number;
+  status: "Ordered" | "In Transit" | "Delivered";
+  date: string;
+};
 
-    const [market, setMarket] = useState([
-        { id: "r1", farmer: "Priyanshu", crop: "Paddy", qty: 1200, price: 3.8, location: "Punjab", type: "Fixed" },
-        { id: "r2", farmer: "Bhavya", crop: "Wheat", qty: 800, price: 3.2, location: "Haryana", type: "Auction" }
-    ]);
+export default function OrdersDashboard() {
+  const [orders] = useState<Order[]>([
+    { id: 1, crop: "Paddy Straw", qty: 1000, price: 3.9, status: "In Transit", date: "2025-08-01" },
+    { id: 2, crop: "Wheat Straw", qty: 800, price: 3.2, status: "Delivered", date: "2025-08-05" },
+    { id: 3, crop: "Maize Stalks", qty: 600, price: 2.9, status: "Delivered", date: "2025-08-10" },
+    { id: 4, crop: "Sugarcane Bagasse", qty: 1200, price: 3.8, status: "Ordered", date: "2025-08-15" },
+    { id: 5, crop: "Mustard Residue", qty: 750, price: 3.6, status: "In Transit", date: "2025-08-20" },
+  ]);
 
-    const placeOrder = (id: string) => {
-        const item = market.find(m => m.id === id);
-        if (!item) return;
-        setOrders([...orders, { id: orders.length + 1, crop: item.crop, qty: item.qty, price: item.price, status: "Ordered" }]);
-        alert(`Order placed for ${item.crop}!`);
-    };
+  const activeOrders = orders.filter(o => o.status !== "Delivered").length;
+  const completedOrders = orders.filter(o => o.status === "Delivered").length;
+  const totalQty = orders.reduce((sum, o) => sum + o.qty, 0);
+  const totalSpend = orders.reduce((sum, o) => sum + o.qty * o.price, 0);
 
-    return (
-        <div className="p-6 space-y-6">
-            <h1 className="text-2xl font-bold">Buyer Dashboard</h1>
+  // Data for charts
+  const monthlyData = [
+    { month: "May", qty: 800 },
+    { month: "Jun", qty: 1200 },
+    { month: "Jul", qty: 1000 },
+    { month: "Aug", qty: totalQty },
+  ];
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <SummaryCard title="Active Orders" value={orders.filter(o => o.status !== "Delivered").length} />
-                <SummaryCard title="Completed Orders" value={orders.filter(o => o.status === "Delivered").length} />
-                <SummaryCard title="Total Bought" value={`${orders.reduce((a, o) => a + o.qty, 0)} kg`} />
-                <SummaryCard title="Escrow Balance" value="₹15,000" />
-            </div>
+  const statusData = [
+    { name: "Ordered", value: orders.filter(o => o.status === "Ordered").length },
+    { name: "In Transit", value: orders.filter(o => o.status === "In Transit").length },
+    { name: "Delivered", value: completedOrders },
+  ];
 
-            {/* Market Preview */}
-            <div className="bg-white p-4 rounded-xl shadow">
-                <h2 className="text-lg font-semibold mb-2">Available Residues</h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                    {market.map(item => (
-                        <div key={item.id} className="p-4 border rounded-xl shadow-sm bg-gray-50 flex flex-col justify-between">
-                            <div>
-                                <p className="font-semibold">{item.crop}</p>
-                                <p>{item.qty} kg • {item.location}</p>
-                                <p className="text-green-700 font-bold">₹{item.price}/kg</p>
-                                <span className={`inline-block px-2 py-1 text-xs rounded mt-1 ${
-                                    item.type === "Fixed" ? "bg-blue-200 text-blue-800" : "bg-purple-200 text-purple-800"
-                                }`}>
-                  {item.type}
-                </span>
-                            </div>
-                            <button
-                                onClick={() => placeOrder(item.id)}
-                                className="mt-3 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                            >
-                                Order Now
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
+  const COLORS = ["#facc15", "#3b82f6", "#22c55e"];
 
-            {/* Recent Orders */}
-            <div className="bg-white p-4 rounded-xl shadow">
-                <h2 className="text-lg font-semibold mb-2">My Recent Orders</h2>
-                <table className="w-full text-left">
-                    <thead>
-                    <tr className="border-b">
-                        <th>Crop</th><th>Quantity</th><th>Price</th><th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {orders.map(o => (
-                        <tr key={o.id} className="border-b">
-                            <td>{o.crop}</td>
-                            <td>{o.qty} kg</td>
-                            <td>₹{o.price}/kg</td>
-                            <td><StatusBadge status={o.status} /></td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
+  return (
+    <main className="pt-24 max-w-7xl mx-auto px-6 sm:px-12 lg:px-24 space-y-8">
+      <h1 className="text-4xl font-extrabold text-green-700 mb-4 drop-shadow-md">
+        📦 My Orders Dashboard
+      </h1>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <SummaryCard title="Active Orders" value={activeOrders} />
+        <SummaryCard title="Completed Orders" value={completedOrders} />
+        <SummaryCard title="Total Quantity Bought" value={`${totalQty} kg`} />
+        <SummaryCard title="Total Spend" value={`₹${totalSpend.toFixed(0)}`} />
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Line Chart (Trend) */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">Monthly Procurement Trend</h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={monthlyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="qty" stroke="#16a34a" strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
-    );
+
+        {/* Pie Chart (Status Distribution) */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">Order Status Distribution</h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={statusData}
+                dataKey="value"
+                cx="50%" cy="50%"
+                outerRadius={80}
+                label
+              >
+                {statusData.map((_, i) => (
+                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Pie>
+              <Legend />
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="bg-white p-6 rounded-xl shadow overflow-x-auto">
+        <h2 className="text-lg font-semibold mb-4">Recent Orders</h2>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="py-2 px-4 text-left">Crop</th>
+              <th className="py-2 px-4 text-left">Quantity</th>
+              <th className="py-2 px-4 text-left">Price</th>
+              <th className="py-2 px-4 text-left">Total</th>
+              <th className="py-2 px-4 text-left">Status</th>
+              <th className="py-2 px-4 text-left">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id} className="border-b hover:bg-green-50 transition">
+                <td className="py-2 px-4">{o.crop}</td>
+                <td className="py-2 px-4">{o.qty} kg</td>
+                <td className="py-2 px-4">₹{o.price}/kg</td>
+                <td className="py-2 px-4">₹{(o.qty * o.price).toFixed(0)}</td>
+                <td className="py-2 px-4">
+                  <StatusBadge status={o.status} />
+                </td>
+                <td className="py-2 px-4">{o.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  );
 }
 
 function SummaryCard({ title, value }: { title: string; value: string | number }) {
-    return (
-        <div className="bg-white p-4 rounded-xl shadow text-center">
-            <p className="text-gray-600">{title}</p>
-            <p className="text-xl font-bold">{value}</p>
-        </div>
-    );
+  return (
+    <div className="bg-white rounded-xl shadow p-5 text-center">
+      <p className="text-gray-600 text-sm">{title}</p>
+      <p className="text-2xl font-bold mt-2">{value}</p>
+    </div>
+  );
 }
 
 function StatusBadge({ status }: { status: string }) {
-    const colors: Record<string, string> = {
-        Ordered: "bg-yellow-200 text-yellow-800",
-        "In Transit": "bg-blue-200 text-blue-800",
-        Delivered: "bg-green-200 text-green-800"
-    };
-    return (
-        <span className={`px-2 py-1 rounded text-sm ${colors[status] || "bg-gray-200"}`}>
+  const colors: Record<string, string> = {
+    Ordered: "bg-yellow-200 text-yellow-800",
+    "In Transit": "bg-blue-200 text-blue-800",
+    Delivered: "bg-green-200 text-green-800",
+  };
+
+  return (
+    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${colors[status] || "bg-gray-200 text-gray-700"}`}>
       {status}
     </span>
-    );
+  );
 }
+
+

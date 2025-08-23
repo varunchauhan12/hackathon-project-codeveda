@@ -5,6 +5,8 @@ import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Navbar from "./utils/navbar";
 import Footer from "./utils/footer";
+import "leaflet/dist/leaflet.css";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

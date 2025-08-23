@@ -22,25 +22,30 @@ export default function Navbar() {
   ];
 
   const moreLinks = [
-    { name: "Price Predictor", href: "#" },
-    { name: "Buy", href: "#" },
-    { name: "Sell", href: "#" },
-    { name: "Testimonials", href: "#" },
+    { name: "Price Predictor", href: "/predictor" },
+    { name: "Buy", href: "/pages/buyer/market" },
+    { name: "Sell", href: "/pages/farmer" },
+    { name: "Testimonials", href: "/testimonials" },
   ];
 
-  // ⬇ Changed here → dark text + semibold
   const linkStyle =
     "relative px-2 py-1 text-gray-800 font-semibold hover:text-green-600 after:block after:scale-x-0 after:bg-green-500 after:h-[2px] after:rounded-full after:transition-transform hover:after:scale-x-100 transition-all duration-200";
   const activeStyle = "text-green-600 font-bold scale-105";
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (mobileOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+      if (
+        mobileOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(e.target)
+      ) {
         setMobileOpen(false);
       }
       if (dropdownOpen) {
-        const clickedMore = moreBtnRef.current && moreBtnRef.current.contains(e.target);
-        const insideDropdown = dropdownRef.current && dropdownRef.current.contains(e.target);
+        const clickedMore =
+          moreBtnRef.current && moreBtnRef.current.contains(e.target);
+        const insideDropdown =
+          dropdownRef.current && dropdownRef.current.contains(e.target);
         if (!clickedMore && !insideDropdown) setDropdownOpen(false);
       }
     }
@@ -81,7 +86,11 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <img src="/images/logo.png" alt="Haryali" className="h-20 w-auto object-contain" />
+            <img
+              src="/images/logo.png"
+              alt="Haryali"
+              className="h-20 w-auto object-contain"
+            />
             <h1 className="font-bold text-4xl text-green-600">Haryali</h1>
           </Link>
 
@@ -92,7 +101,9 @@ export default function Navbar() {
                 key={name}
                 href={href}
                 onClick={() => setActive(name.toLowerCase())}
-                className={`${linkStyle} ${active === name.toLowerCase() ? activeStyle : ""}`}
+                className={`${linkStyle} ${
+                  active === name.toLowerCase() ? activeStyle : ""
+                }`}
               >
                 {name}
               </Link>
@@ -118,7 +129,9 @@ export default function Navbar() {
                         setActive(name.toLowerCase());
                       }}
                       className={`block px-5 py-2 hover:bg-gray-100 transition-colors ${
-                        active === name.toLowerCase() ? "font-bold text-green-600" : ""
+                        active === name.toLowerCase()
+                          ? "font-bold text-green-600"
+                          : ""
                       }`}
                     >
                       {name}
@@ -145,7 +158,10 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button onClick={() => setMobileOpen((p) => !p)} className="text-white">
+            <button
+              onClick={() => setMobileOpen((p) => !p)}
+              className="text-white"
+            >
               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
