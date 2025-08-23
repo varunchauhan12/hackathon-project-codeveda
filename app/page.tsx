@@ -6,8 +6,7 @@ import StyledButton from "./components/button";
 
 export default function LandingPage() {
   const { scrollY } = useScroll();
-
-  // Smooth fading + parallax 
+ 
   const opacity = useTransform(scrollY, [0, 400], [1, 0], { clamp: true });
   const y = useTransform(scrollY, [0, 400], [0, -80], { clamp: true });
 
